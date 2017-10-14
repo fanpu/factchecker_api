@@ -9,20 +9,19 @@ myGoogleNews.resultsPerPage = 50; // max 100
 var nextCounter = 0;
 
 function factcheck(query) {
+    output = "";        
     myGoogleNews(query, function (err, res){
-        output = "";        
         res.links.forEach(function (item, i) {
             //            console.log(item);
             output += (i + 1) + ". " + item.title + "\n";
-            output += "Source: " + extractHostname(item.link) + "\n";
-            
+            output += "Source: " + extractHostname(item.link) + "\n";            
         });
-
-        console.log(output);
+//        console.log(output);
         if (err) {
-            console.error(err)
+            return err;
+            //            console.error(err)
         }
-        
+        return output;
     });
 }
 
@@ -45,4 +44,4 @@ function extractHostname(url) {
     return hostname;
 }
 
-console.log(factcheck('smrt breakdown'));
+console.log(factcheck('donald'));

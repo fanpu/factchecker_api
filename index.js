@@ -7,7 +7,7 @@ const bot = new TelegramBot(token, {polling: true});
 myGoogleNews.resultsPerPage = 10; // max 100
 var nextCounter = 0;
 
-function factcheck(query) {
+function factcheck(chat_id, query) {
     output = "";        
     myGoogleNews(query, function (err, res){
         res.links.forEach(function (item, i) {
@@ -20,8 +20,9 @@ function factcheck(query) {
             return err;
             //            console.error(err)
         }
+        bot.sendMessage(chat_id, output);
     });
-    return output;
+
 }
 
 function extractHostname(url) {
@@ -59,20 +60,13 @@ bot.on('message', (msg) => {
     }
 */
     var t_factcheck = "text factcheck";
+    
     if (msg.text.toLowerCase().includes(t_factcheck)) {
         bot.sendMessage(msg.chat.id,"What would you want to Factcheck?");
-    } else {
-        let query_result = factcheck(msg.text);
+    } else if (!msg.text.toLowerCase().includes('/start')){
+        factcheck(msg.chat.id, msg.text);
         console.log(msg.text);
-//        console.log(typeof query_result);
- //       console.log(query_result);
-//        let test = "boop\nsadasd";
-//        console.log(query_result[0]);
-        bot.sendMessage(msg.chat.id, query_result);
-     }
-    
-    
-
+     }        
 });
 
 bot.onText(/\/start/, (msg) => {
