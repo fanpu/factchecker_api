@@ -1,0 +1,25 @@
+{
+  "name": "factchecker_api",
+  "version": "1.0.0",
+  "description": "Factchecker API for Telegram",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fanpu/factchecker_api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fanpu/factchecker_api/issues"
+  },
+  "homepage": "https://github.com/fanpu/factchecker_api#readme",
+  "dependencies": {
+    "axios": "^0.16.2",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2"
+  }
+}

@@ -1,0 +1,1 @@
+curl -F "url=hhttps://factcheckerapi-bmvgqmrpsa.now.sh/factcheck"  https://api.telegram.org/bot342272465:AAHND7PeZhwGdh_sJ-jiARWoYCOkd7WTEYI/setWebhook
