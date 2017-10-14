@@ -20,6 +20,8 @@
   "dependencies": {
     "axios": "^0.16.2",
     "body-parser": "^1.18.2",
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "my-google-news": "^3.0.0",
+    "node-telegram-bot-api": "^0.28.0"
   }
 }

@@ -1,47 +1,88 @@
-var express = require('express');
-var app = express();
-var bodyParser = require('body-parser');
-const axios = require('axios')
+var myGoogleNews = require('my-google-news');
 
-app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({
-  extended: true
-})); // for parsing application/x-www-form-urlencoded
+const TelegramBot = require('node-telegram-bot-api');
+const token = '342272465:AAHND7PeZhwGdh_sJ-jiARWoYCOkd7WTEYI'
+const bot = new TelegramBot(token, {polling: true});
 
-//This is the route the API will call
-app.post('/factcheck', function(req, res) {
-  const {message} = req.body
+myGoogleNews.resultsPerPage = 10; // max 100
+var nextCounter = 0;
 
-  //Each message contains "text" and a "chat" object, which has an "id" which is the chat id
+function factcheck(query) {
+    output = "";        
+    myGoogleNews(query, function (err, res){
+        res.links.forEach(function (item, i) {
+            //            console.log(item);
+            output += (i + 1) + ". " + item.title + "\n";
+            output += "Source: " + extractHostname(item.link) + "\n";            
+        });
+//        console.log(output);
+        if (err) {
+            return err;
+            //            console.error(err)
+        }
+    });
+    return output;
+}
 
-//  if (!message || message.text.toLowerCase().indexOf('marco') <0) {
-    // In case a message is not present, or if our message does not have the word marco in it, do nothing and return an empty response
- //   return res.end()
- // }
+function extractHostname(url) {
+    var hostname;
+    //find & remove protocol (http, ftp, etc.) and get hostname
 
-  // If we've gotten this far, it means that we have received a message containing the word "marco".
-  // Respond by hitting the telegram bot API and responding to the approprite chat_id with the word "Polo!!"
-  // Remember to use your own API toked instead of the one below  "https://api.telegram.org/bot<your_api_token>/sendMessage"
-  axios.post('https://api.telegram.org/bot342272465:AAHND7PeZhwGdh_sJ-jiARWoYCOkd7WTEYI/sendMessage', {
-    chat_id: message.chat.id,
-    text: 'Hello'
-  })
-    .then(response => {
-      // We get here if the message was successfully posted
-      console.log('Message posted')
-      res.end('ok')
-    })
-    .catch(err => {
-      // ...and here if it was not
-      console.log('Error :', err)
-      res.end('Error :' + err)
-    })
+    if (url.indexOf("://") > -1) {
+        hostname = url.split('/')[2];
+    }
+    else {
+        hostname = url.split('/')[0];
+    }
+
+    //find & remove port number
+    hostname = hostname.split(':')[0];
+    //find & remove "?"
+    hostname = hostname.split('?')[0];
+
+    return hostname;
+}
+
+
+
+bot.on('message', (msg) => {
+    //    if (msg.text != null && msg.text != "") bot.sendMessage(msg.text);
+/*
+    var hi = "hi";
+    if (msg.text.toLowerCase().indexOf(hi) === 0) {
+        bot.sendMessage(msg.chat.id,"Hello dear user\nhi");
+    } 
+    
+    var bye = "bye";
+    if (msg.text.toLowerCase().includes(bye)) {
+        bot.sendMessage(msg.chat.id, "Hope to see you around again , Bye");
+    }
+*/
+    var t_factcheck = "text factcheck";
+    if (msg.text.toLowerCase().includes(t_factcheck)) {
+        bot.sendMessage(msg.chat.id,"What would you want to Factcheck?");
+    } else {
+        let query_result = factcheck(msg.text);
+        console.log(msg.text);
+//        console.log(typeof query_result);
+ //       console.log(query_result);
+//        let test = "boop\nsadasd";
+//        console.log(query_result[0]);
+        bot.sendMessage(msg.chat.id, query_result);
+     }
+    
+    
 
 });
 
-// Finally, start our server
-app.listen(80, function() {
-  console.log('Telegram app listening on port 80!');
+bot.onText(/\/start/, (msg) => {
+    
+    bot.sendMessage(msg.chat.id, "24/7 Fact Checking At Your Service!", {
+        "reply_markup": {
+            "keyboard": [["Text Factcheck", "Image Factcheck"]]
+        }
+    });
+    //    bot.sendMessage(msg.chat.id, "24/7 Fact Checking At Your Service!");
+    
 });
-
 
